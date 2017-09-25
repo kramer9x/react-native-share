@@ -2,6 +2,7 @@ package cl.json;
 
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.webkit.MimeTypeMap;
+import android.support.v4.content.FileProvider;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 
@@ -121,7 +123,14 @@ public class ShareFile {
                 fos.write(Base64.decode(encodedImg, Base64.DEFAULT));
                 fos.flush();
                 fos.close();
-                return Uri.fromFile(file);
+
+                Resources res = this.reactContext.getResources();
+                int resId = res.getIdentifier("file_provider_authority", "string", this.reactContext.getPackageName());
+                String authority = res.getString(resId);
+                return FileProvider.getUriForFile(
+                        this.reactContext,
+                        authority,
+                        file);
 
             } catch (IOException e) {
                 e.printStackTrace();
